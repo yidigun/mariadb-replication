@@ -2,6 +2,7 @@
 
 ## Environment variables
 
+- **MARIADB_PORT**: service port (default: 3306)
 - **REPL_MODE**: replication mode (required. ```none``` | ```master``` | ```slave```)
 - **REPL_SERVER_ID**: unique id for each server instance (required)
 - **REPL_USERNAME**: replication username. password must be specified using ```PASSWORD_SECRET``` (default: ```repl```)
@@ -108,12 +109,11 @@ Following command will create backup copy in ```/snapshots/snapshot-%Y%m%d```.
 And move the backup files to slave server's ```/var/lib/mysql``` volume by any means.
 
 ```shell
-[MASTER]$ (cd /data/mariadb/snapshots/snapshot-`date +%Y%m%d`; tar cf - *) | \
-   ssh slave-server ' \
-     sudo mkdir -p /data/mariadb/data; \
-     cd /data/mariadb/data; \
-     sudo tar xf - && \
-     sudo chown -R mysql:mysql /data/mariadb/data'
+[MASTER]$ sudo su -c "cd /data/mariadb/snapshots/snapshot-`date +%Y%m%d`; tar cf - *" | \
+          ssh slave-server ' \
+              sudo mkdir -p /data/mariadb/data; \
+              sudo tar -C /data/mariadb/data xf - && \
+              sudo chown -R 999:999 /data/mariadb/data'
 ```
 
 ### 3. Slave setup

@@ -18,6 +18,12 @@ fi
 CMD=$1; shift
 case $CMD in
   start|run|mariadbd|mysqld)
+    # 0. server config
+    MARIADB_PORT=${MARIADB_PORT:-3306}
+    if [ $MARIADB_PORT -ne 3306 ]; then
+      sed -i -e "s/^port/$MARIADB_PORT/" /etc/mysql/conf.d/00-default.cnf
+    fi
+
     # 1. define server role & server_id
     echo "[$myname] Replication Role: $REPL_MODE"
     repl_config=/etc/mysql/conf.d/01-replication-${REPL_MODE}.cnf
