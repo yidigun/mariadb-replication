@@ -8,17 +8,20 @@ if [ ! -f /run/secrets/$PASSWORD_SECRET ]; then
 fi
 . /run/secrets/$PASSWORD_SECRET
 
+run_query() {
+  echo $* | sed -e "s/^/[$0] /"
+  echo $* | mysql -uroot mysql
+}
+
 # delete root users except root@'%'
 del_root_users=` \
     echo "SELECT host FROM proxies_priv WHERE user = 'root' AND host NOT IN ('localhost', '%');" | \
       mysql -uroot mysql | sed -e 1d`
 for h in $del_root_users; do
-  echo "DROP USER IF EXISTS root@'$h'; DELETE FROM proxies_priv WHERE Host = '$h';" | mysql -uroot mysql
+  run_query "DROP USER IF EXISTS root@'$h'; DELETE FROM proxies_priv WHERE Host = '$h';"
 done
 
-cat <<EOF | mysql -uroot mysql
-CREATE USER IF NOT EXISTS root@'%' IDENTIFIED BY '$ROOT_PASSWORD';
-ALTER USER root@'%' IDENTIFIED BY '$ROOT_PASSWORD';
-GRANT ALL PRIVILEGES ON *.* TO root@'%' WITH GRANT OPTION;
-FLUSH PRIVILEGES;
-EOF
+run_query "CREATE USER IF NOT EXISTS root@'%' IDENTIFIED BY '$ROOT_PASSWORD';"
+run_query "ALTER USER root@'%' IDENTIFIED BY '$ROOT_PASSWORD';"
+run_query "ALL PRIVILEGES ON *.* TO root@'%' WITH GRANT OPTION;"
+run_query "FLUSH PRIVILEGES;"
