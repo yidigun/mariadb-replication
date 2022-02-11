@@ -19,8 +19,7 @@ if [ "$REPL_MODE" = master -o "$REPL_MODE" = slave ]; then
   echo
 
   run_query() {
-    echo "$*" | sed -e "s/^/[mysql] /"
-    echo "$*" | mysql -uroot mysql
+    echo "$*" | mysql -uroot mysql | sed -e "s/^/[mysql] /"
   }
   case $REPL_MODE in
     master)

@@ -1,9 +1,23 @@
+# Test mariadb replication
+#
+# docker-compose up --no-start
+# docker-compose start mariadb-master
+# docker-compose exec mariadb-master backup-master
+# (cd testdata/master/snapshots/snapshot-`date +%Y%m%d`; sudo tar cf - *) | \
+#   (sudo mkdir -p testdata/slave/data; cd testdata/slave/data; sudo tar xf - && sudo chown -R 999:999 .)
+# docker-compose start mariadb-slave
+# docker-compose exec mariadb-slave start-slave
+#
+# Show status
+# docker-compose exec mariadb-master show-status
+# docker-compose exec mariadb-slave show-status
+
 version: "3.3"
 
 services:
   mariadb-master:
     container_name: mariadb-master
-    image: yidigun/mariadb-replication:test
+    image: yidigun/mariadb-replication:10.7-focal
     restart: unless-stopped
     hostname: mariadb-master
     ports:
@@ -22,22 +36,22 @@ services:
       - ${PWD}/testdata/master/snapshots:/snapshots
     secrets:
       - passwords
-    profiles:
-      - master
 
   mariadb-slave:
     container_name: mariadb-slave
-    image: yidigun/mariadb-replication:test
+    image: yidigun/mariadb-replication:10.7-focal
     restart: unless-stopped
     hostname: mariadb-slave
     ports:
-      - "3306:3306/tcp"
+      - "13306:3306/tcp"
     environment:
       - TZ=Asia/Seoul
       - LANG=ko_KR.UTF-8
       - REPL_MODE=slave
       - REPL_SERVER_ID=2
       - REPL_USERNAME=repl
+      - REPL_MASTER_HOST=mariadb-master
+      - REPL_MASTER_PORT=3306
       - PASSWORD_SECRET=passwords
     volumes:
       - ${PWD}/testdata/slave/data:/var/lib/mysql
@@ -47,8 +61,6 @@ services:
       - mariadb-master
     secrets:
       - passwords
-    profiles:
-      - slave
 
 secrets:
   passwords:

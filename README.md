@@ -2,7 +2,6 @@
 
 ## Environment variables
 
-- **MARIADB_PORT**: service port (default: 3306)
 - **REPL_MODE**: replication mode (required. ```none``` | ```master``` | ```slave```)
 - **REPL_SERVER_ID**: unique id for each server instance (required)
 - **REPL_USERNAME**: replication username. password must be specified using ```PASSWORD_SECRET``` (default: ```repl```)
@@ -14,6 +13,7 @@
 - **SSL_CA_FILE**: ssl ca certificate file
 - **SSL_KEY_FILE**: ssl private-key file
 - **SSL_REQUIRE**: require_secure_transport variable value
+- **MARIADB_PORT**: service port (default: 3306)
 
 ## How to inject initial passwords
 

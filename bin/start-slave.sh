@@ -9,8 +9,7 @@ fi
 . /run/secrets/$PASSWORD_SECRET
 
 run_query() {
-  echo "$*" | sed -e "s/^/[$myname] /"
-  echo "$*" | mysql -uroot mysql
+  echo "$*" | mysql -uroot mysql | sed -e "s/^/[$myname] /"
 }
 
 if [ ! -f /var/lib/mysql/xtrabackup_binlog_info ]; then
