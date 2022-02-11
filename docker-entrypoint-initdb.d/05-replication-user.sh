@@ -8,7 +8,7 @@ run_query() {
   echo "$*" | mysql -uroot mysql
 }
 
-if [ "$REPL_ROLE" = master ]; then
+if [ "$REPL_MODE" = master ]; then
   echo "[$myname] Create replication user: $REPL_USERNAME"
   PASSWORD_SECRET=${PASSWORD_SECRET:-passwords}
   if [ ! -f /run/secrets/$PASSWORD_SECRET ]; then
