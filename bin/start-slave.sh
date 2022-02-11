@@ -27,7 +27,7 @@ if [ -z "$REPL_MASTER_HOST" ]; then
 fi
 REPL_MASTER_PORT=${REPL_MASTER_PORT:-3306}
 
-eval `cat /var/lib/mysql/xtrabackup_binlog_info | awk '{print "MASTER_LOG_FILE=" $1 "\bMASTER_LOG_POS=" $2 }'`
+eval `cat /var/lib/mysql/xtrabackup_binlog_info | awk '{print "MASTER_LOG_FILE=" $1 "\nMASTER_LOG_POS=" $2 }'`
 run_query "CHANGE MASTER TO \
     MASTER_HOST='$REPL_MASTER_HOST', \
     MASTER_PORT=$REPL_MASTER_PORT, \
