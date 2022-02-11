@@ -1,0 +1,12 @@
+*.iml
+.idea
+.dockerignore
+.gitignore
+Dockerfile
+Makefile
+README.md
+*.example
+
+docker-compose.yml
+passwords.sh
+testdata

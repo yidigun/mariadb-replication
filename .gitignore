@@ -1,0 +1,5 @@
+*.iml
+.idea
+docker-compose.yml
+passwords.sh
+testdata

@@ -1,0 +1,55 @@
+version: "3.3"
+
+services:
+  mariadb-master:
+    container_name: mariadb-master
+    image: yidigun/mariadb-replication:test
+    restart: unless-stopped
+    hostname: mariadb-master
+    ports:
+      - "3306:3306/tcp"
+    environment:
+      - TZ=Asia/Seoul
+      - LANG=ko_KR.UTF-8
+      - REPL_MODE=master
+      - REPL_SERVER_ID=1
+      - REPL_USERNAME=repl
+      - PASSWORD_SECRET=passwords
+    volumes:
+      - ${PWD}/testdata/master/data:/var/lib/mysql
+      - ${PWD}/testdata/master/log:/var/log/mysql
+      - ${PWD}/testdata/master/run:/run/mysqld
+      - ${PWD}/testdata/master/snapshots:/snapshots
+    secrets:
+      - passwords
+    profiles:
+      - master
+
+  mariadb-slave:
+    container_name: mariadb-slave
+    image: yidigun/mariadb-replication:test
+    restart: unless-stopped
+    hostname: mariadb-slave
+    ports:
+      - "3306:3306/tcp"
+    environment:
+      - TZ=Asia/Seoul
+      - LANG=ko_KR.UTF-8
+      - REPL_MODE=slave
+      - REPL_SERVER_ID=2
+      - REPL_USERNAME=repl
+      - PASSWORD_SECRET=passwords
+    volumes:
+      - ${PWD}/testdata/slave/data:/var/lib/mysql
+      - ${PWD}/testdata/slave/log:/var/log/mysql
+      - ${PWD}/testdata/slave/run:/run/mysqld
+    depends_on:
+      - mariadb-master
+    secrets:
+      - passwords
+    profiles:
+      - slave
+
+secrets:
+  passwords:
+    file: ${PWD}/passwords.sh
