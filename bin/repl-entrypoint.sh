@@ -15,11 +15,6 @@ if [ ! -f /run/secrets/$PASSWORD_SECRET ]; then
 fi
 . /run/secrets/$PASSWORD_SECRET
 
-run_query() {
-  echo "$*" | sed -e "s/^/[$myname] /"
-  echo "$*" | mysql -uroot mysql
-}
-
 CMD=$1; shift
 case $CMD in
   start|run|mariadbd|mysqld)
@@ -62,47 +57,14 @@ EOF
       cat $ssl_config | sed -e "s/^/[$myname] /"
     fi
 
-    # 3. call /usr/local/bin/docker-entrypoint.sh
+    # 3. call /usr/local/bin/docker-repl-entrypoint.sh
     echo "[$myname] exec() to /usr/local/bin/docker-entrypoint.sh"
     MARIADB_ALLOW_EMPTY_ROOT_PASSWORD=1 \
-      exec /usr/local/bin/docker-entrypoint.sh mariadbd
+      exec /usr/local/bin/docker-repl-entrypoint.sh mariadbd
 
-    # docker-entrypoint.sh will execute next steps:
+    # docker-repl-entrypoint.sh will execute next steps:
     # 4. docker-entrypoint-initdb.d/04-root-password.sh
     # 5. docker-entrypoint-initdb.d/05-replication-user.sh
-    ;;
-
-  backup-master)
-    snapshot=/snapshots/snapshot-`date +%Y%m%d`
-    echo "[$myname] create backup: --target-dir=$snapshot"
-    mariabackup --backup --target-dir=$snapshot && \
-      mariabackup --prepare --target-dir=$snapshot
-    ;;
-
-  start-slave)
-    if [ ! -f /var/lib/mysql/xtrabackup_binlog_info ]; then
-      echo "$myname: /var/lib/mysql/xtrabackup_binlog_info: not found" >&2
-      exit 1
-    fi
-    if [ "$REPL_MODE" != slave ]; then
-      echo "$myname: invalid REPL_MODE: $REPL_MODE" >&2
-      exit 1
-    fi
-    if [ -z "$REPL_MASTER_HOST" ]; then
-      echo "$myname: \$REPL_MASTER_HOST is not specified" >&2
-      exit 1
-    fi
-    REPL_MASTER_PORT=${REPL_MASTER_PORT:-3306}
-
-    eval `cat /var/lib/mysql/xtrabackup_binlog_info | awk '{print "MASTER_LOG_FILE=" $1 "\bMASTER_LOG_POS=" $2 }'`
-    run_query "CHANGE MASTER TO \
-        MASTER_HOST="$REPL_MASTER_HOST", \
-        MASTER_PORT=$REPL_MASTER_PORT, \
-        MASTER_USER="$REPL_USERNAME", \
-        MASTER_PASSWORD="$REPL_PASSWORD", \
-        MASTER_LOG_FILE='$MASTER_LOG_FILE', \
-        MASTER_LOG_POS=$MASTER_LOG_POS;"
-    run_query "START SLAVE;"
     ;;
 
   sh|bash|/bin/sh|/bin/bash)
@@ -110,6 +72,6 @@ EOF
     ;;
 
   *)
-    echo "usage: $0 { run [ ARGS ... ] | sh [ ARGS ... ] | backup-master | start-slave }"
+    echo "usage: $0 { run [ ARGS ... ] | sh [ ARGS ... ] }"
     ;;
 esac
