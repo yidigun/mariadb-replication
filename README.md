@@ -1,5 +1,17 @@
 # Mariadb Replication
 
+Mariadb replication settings
+
+## Mariadb License
+
+See https://mariadb.com/kb/en/mariadb-license/
+
+## Dockerfile License
+
+It's just free. (Public Domain)
+
+See https://github.com/yidigun/mariadb-replication
+
 ## Environment variables
 
 - **REPL_MODE**: replication mode (required. ```none``` | ```master``` | ```slave```)
@@ -63,8 +75,8 @@ REPL_PASSWORD="cp1fly*"     # replication user
 version: "3.3"
 
 services:
-  mariadb:
-    image: yidigun/mariadb:10.7
+  mariadb-replication:
+    image: yidigun/mariadb-replication:10.7
     restart: unless-stopped
     hostname: ${HOSTNAME}
     ports:
@@ -76,10 +88,10 @@ services:
       - REPL_SERVER_ID=1
       - REPL_USERNAME=repl
     volumes:
-      - /data/mariadb/data:/var/lib/mysql
-      - /data/mariadb/log:/var/log/mysql
-      - /data/mariadb/run:/run/mysqld
-      - /data/mariadb/snapshots:/snapshots
+      - /data/mariadb-replication/data:/var/lib/mysql
+      - /data/mariadb-replication/log:/var/log/mysql
+      - /data/mariadb-replication/run:/run/mysqld
+      - /data/mariadb-replication/snapshots:/snapshots
     secrets:
       - passwords
 
@@ -103,17 +115,17 @@ Following command will create backup copy in ```/snapshots/snapshot-%Y%m%d```.
 (eg: ```/snapshots/snapshot-20220210```)
 
 ```shell
-[MASTER]$ docker-compose exec mariadb backup-master
+[MASTER]$ docker-compose exec mariadb-replication backup-master
 ```
 
 And move the backup files to slave server's ```/var/lib/mysql``` volume by any means.
 
 ```shell
-[MASTER]$ sudo su -c "cd /data/mariadb/snapshots/snapshot-`date +%Y%m%d`; tar cf - *" | \
+[MASTER]$ (cd /data/mariadb-replication/snapshots/snapshot-`date +%Y%m%d`; tar cf - *) | \
           ssh slave-server ' \
-              sudo mkdir -p /data/mariadb/data; \
-              sudo tar -C /data/mariadb/data xf - && \
-              sudo chown -R 999:999 /data/mariadb/data'
+              sudo mkdir -p /data/mariadb-replication/data; \
+              (cd /data/mariadb-replication/data; sudo tar xf -) && \
+              sudo chown -R 999:999 /data/mariadb-replication/data'
 ```
 
 ### 3. Slave setup
@@ -132,8 +144,8 @@ REPL_PASSWORD="cp1fly*"     # replication user
 version: "3.3"
 
 services:
-  mariadb:
-    image: yidigun/mariadb:10.7
+  mariadb-replication:
+    image: yidigun/mariadb-replication:10.7
     restart: unless-stopped
     hostname: ${HOSTNAME}
     ports:
@@ -144,12 +156,12 @@ services:
       - REPL_MODE=slave
       - REPL_SERVER_ID=2
       - REPL_USERNAME=repl
-      - REPL_MASTER_HOST=mariadb-master.example.com
+      - REPL_MASTER_HOST=mariadb-replication-master.example.com
       - REPL_MASTER_PORT=3306
     volumes:
-      - /data/mariadb/data:/var/lib/mysql
-      - /data/mariadb/log:/var/log/mysql
-      - /data/mariadb/run:/run/mysqld
+      - /data/mariadb-replication/data:/var/lib/mysql
+      - /data/mariadb-replication/log:/var/log/mysql
+      - /data/mariadb-replication/run:/run/mysqld
     secrets:
       - passwords
 
@@ -170,5 +182,11 @@ Replication position will retrieved from ```/var/lib/mysql```/```xtrabackup_binl
 This file was generated when ```mariabackip``` make backup copy.
 
 ```shell
-[SLAVE]$ docker-compose exec mariadb start-slave
+[SLAVE]$ docker-compose exec mariadb-replication start-slave
+```
+
+### 4. Check status
+
+```shell
+docker-compose exec mariadb-replication show-status
 ```
