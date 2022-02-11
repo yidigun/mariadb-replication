@@ -60,7 +60,7 @@ EOF
     # 3. call /usr/local/bin/docker-repl-entrypoint.sh
     echo "[$myname] exec() to /usr/local/bin/docker-entrypoint.sh"
     MARIADB_ALLOW_EMPTY_ROOT_PASSWORD=1 \
-      exec /usr/local/bin/docker-repl-entrypoint.sh mariadbd
+      exec /usr/local/bin/docker-entrypoint.sh mariadbd
 
     # docker-repl-entrypoint.sh will execute next steps:
     # 4. docker-entrypoint-initdb.d/04-root-password.sh
