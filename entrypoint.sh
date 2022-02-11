@@ -1,13 +1,13 @@
 #!/bin/sh
 myname=`basename $0 .sh | sed -e 's!/!_!g'`
 
-REPL_ROLE=${REPL_ROLE:-none}
-if [ -z "$REPL_SERVER_ID" -a "REPL_ROLE" = master ]; then
+REPL_MODE=${REPL_MODE:-none}
+if [ -z "$REPL_SERVER_ID" -a "$REPL_MODE" = master ]; then
   REPL_SERVER_ID=1
 fi
 REPL_USERNAME=${REPL_USERNAME:-repl}
 PASSWORD_SECRET=${PASSWORD_SECRET:-passwords}
-export REPL_USERNAME PASSWORD_SECRET REPL_ROLE
+export REPL_USERNAME PASSWORD_SECRET REPL_MODE
 
 if [ ! -f /run/secrets/$PASSWORD_SECRET ]; then
   echo "$myname: /run/secrets/$PASSWORD_SECRET: not found" >&2
@@ -24,10 +24,10 @@ CMD=$1; shift
 case $CMD in
   start|run|mariadbd|mysqld)
     # 1. define server role & server_id
-    echo "[$myname] Replication Role: $REPL_ROLE"
-    repl_config=/etc/mysql/conf.d/01-replication-${REPL_ROLE}.cnf
+    echo "[$myname] Replication Role: $REPL_MODE"
+    repl_config=/etc/mysql/conf.d/01-replication-${REPL_MODE}.cnf
     echo "[$myname] generate config: $repl_config"
-    if [ "$REPL_ROLE" = master ]; then
+    if [ "$REPL_MODE" = master ]; then
       cat <<EOF >$repl_config
 [mysqld]
 server_id               = $REPL_SERVER_ID
@@ -46,7 +46,7 @@ EOF
     # 2. ssl config
     if [ -n "$SSL_CERT_FILE" -o "$SSL_CA_FILE" -o "$SSL_KEY_FILE" ]; then
       SSL_REQUIRE=${SSL_REQUIRE:-off}
-      echo "[$myname] Replication Role: $REPL_ROLE"
+      echo "[$myname] Replication Role: $REPL_MODE"
       ssl_config=/etc/mysql/conf.d/02-ssl.cnf
       echo "[$myname] generate config: $ssl_config"
 
