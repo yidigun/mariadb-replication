@@ -28,7 +28,7 @@ COPY docker-entrypoint-initdb.d/* /docker-entrypoint-initdb.d/
 COPY conf.d/* /etc/mysql/conf.d/
 RUN mkdir -p /snapshots && \
     (cd /usr/local/bin; \
-      for sh in *.sh; do
+      for sh in *.sh; do \
         ln -s $sh `basename $sh .sh`; \
       done)
 
