@@ -28,5 +28,5 @@ done
 echo "[$myname] Set root@'%' password: $ROOT_PASSWORD"
 run_query "CREATE USER IF NOT EXISTS root@'%' IDENTIFIED BY '$ROOT_PASSWORD';"
 run_query "ALTER USER root@'%' IDENTIFIED BY '$ROOT_PASSWORD';"
-run_query "ALL PRIVILEGES ON *.* TO root@'%' WITH GRANT OPTION;"
+run_query "GRANT ALL PRIVILEGES ON *.* TO root@'%' WITH GRANT OPTION;"
 run_query "FLUSH PRIVILEGES;"
