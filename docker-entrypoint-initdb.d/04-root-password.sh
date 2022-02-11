@@ -11,8 +11,8 @@ fi
 . /run/secrets/$PASSWORD_SECRET
 
 run_query() {
-  echo $* | sed -e "s/^/[$myname] /"
-  echo $* | mysql -uroot mysql
+  echo "$*" | sed -e "s/^/[$myname] /"
+  echo "$*" | mysql -uroot mysql
 }
 
 # delete root users except root@'%'

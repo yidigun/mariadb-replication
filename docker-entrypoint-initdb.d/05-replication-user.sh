@@ -4,8 +4,8 @@ myname=`basename $0 .sh | sed -e 's!/!_!g'`
 # 4. create repliaction user if master
 
 run_query() {
-  echo $* | sed -e "s/^/[$myname] /"
-  echo $* | mysql -uroot mysql
+  echo "$*" | sed -e "s/^/[$myname] /"
+  echo "$*" | mysql -uroot mysql
 }
 
 if [ "$REPL_ROLE" = master ]; then
