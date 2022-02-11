@@ -18,9 +18,9 @@ if [ "$REPL_MODE" = master ]; then
   . /run/secrets/$PASSWORD_SECRET
 
   if [ -n "$REPL_USERNAME" ]; then
-    eval "REPL_PASSWORD=`echo $REPL_USERNAME | tr [[:lower:]] [[:upper:]]`_PASSWORD"
+    eval "password=\${`echo $REPL_USERNAME | tr [[:lower:]] [[:upper:]]`_PASSWORD}"
   fi
 
-  run_query "CREATE USER IF NOT EXISTS $REPL_USERNAME@'%' IDENTIFIED BY '$REPL_PASSWORD';"
+  run_query "CREATE USER IF NOT EXISTS $REPL_USERNAME@'%' IDENTIFIED BY '$password';"
   run_query "GRANT REPLICATION SLAVE ON *.* TO $REPL_USERNAME@'%';"
 fi
