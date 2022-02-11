@@ -21,5 +21,5 @@ RUN mkdir -p /snapshots && \
 EXPOSE 3306/tcp
 VOLUME /snapshots
 
-ENTRYPOINT [ "/usr/local/bin/entrypoint.sh" ]
+ENTRYPOINT [ "/usr/local/bin/repl-entrypoint.sh" ]
 CMD [ "run" ]
