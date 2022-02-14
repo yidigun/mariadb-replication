@@ -43,7 +43,7 @@ $(TAG): $(BUILDER)
 	fi; \
 	TAGS="-t $(REPO)/$(IMG_NAME):$(TAG)"; \
 	for t in $(EXTRA_TAGS); do \
-	  tags="$$TAGS -t $(REPO)/$(IMG_NAME):$$t"; \
+	  TAGS="$$TAGS -t $(REPO)/$(IMG_NAME):$$t"; \
 	done; \
 	CMD="docker buildx build \
 	    --builder $(BUILDER) --platform "$(PLATFORM)" \
