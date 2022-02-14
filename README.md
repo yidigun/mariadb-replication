@@ -115,7 +115,7 @@ Following command will create backup copy in ```/snapshots/snapshot-%Y%m%d```.
 (eg: ```/snapshots/snapshot-20220210```)
 
 ```shell
-[MASTER]$ docker-compose exec mariadb-master backup-master
+[MASTER]$ docker-compose exec mariadb-master backup-master --no-lock
 ```
 
 And move the backup files to slave server's ```/var/lib/mysql``` volume by any means.
@@ -188,5 +188,6 @@ This file was generated when ```mariabackip``` make backup copy.
 ### 4. Check status
 
 ```shell
-docker-compose exec mariadb-slave show-status
+[MASTER]$ docker-compose exec mariadb-master show-status
+[SLAVE]$ docker-compose exec mariadb-slave show-status
 ```
