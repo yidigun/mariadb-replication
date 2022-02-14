@@ -9,4 +9,4 @@ README.md
 
 docker-compose.yml
 passwords.sh
-testdata
+/testdata/**
