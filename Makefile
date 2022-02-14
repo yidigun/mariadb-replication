@@ -2,6 +2,7 @@ REPO			= docker.io
 IMG_NAME		= yidigun/mariadb-replication
 
 TAG				= 10.7-focal
+EXTRA_TAGS		= 10.7 latest
 TEST_ARGS		=
 
 IMG_TAG			= $(TAG)
@@ -40,11 +41,14 @@ $(TAG): $(BUILDER)
 	if [ "$(PUSH)" = "yes" ]; then \
 	  PUSH="--push"; \
 	fi; \
+	TAGS="-t $(REPO)/$(IMG_NAME):$(TAG)"; \
+	for t in $(EXTRA_TAGS); do \
+	  tags="$$TAGS -t $(REPO)/$(IMG_NAME):$$t"; \
+	done; \
 	CMD="docker buildx build \
 	    --builder $(BUILDER) --platform "$(PLATFORM)" \
 	    --build-arg IMG_NAME=$(IMG_NAME) --build-arg IMG_TAG=$(IMG_TAG) \
-	    $$BUILD_ARGS $$PUSH \
-	    -t $(REPO)/$(IMG_NAME):latest -t $(REPO)/$(IMG_NAME):$(IMG_TAG) \
+	    $$BUILD_ARGS $$PUSH $$TAGS \
 	    ."; \
 	echo $$CMD; \
 	eval $$CMD
