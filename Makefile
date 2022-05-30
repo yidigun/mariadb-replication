@@ -1,14 +1,15 @@
 REPO			= docker.io
 IMG_NAME		= yidigun/mariadb-replication
 
-TAG				= 10.7-focal
-EXTRA_TAGS		= 10.7 latest
+TAG				= 10.8.3-jammy
+EXTRA_TAGS		= 10.8.3 10.8 10 latest
 TEST_ARGS		=
 
 IMG_TAG			= $(TAG)
 PUSH			= yes
 BUILDER			= crossbuilder
 PLATFORM		= linux/amd64,linux/arm64
+BUILD_OPTS		= --progress=plain
 
 .PHONEY: $(BUILDER) $(TAG) all test
 
@@ -24,7 +25,7 @@ test:
 	for a in $(BUILD_ARGS); do \
 	  BUILD_ARGS="$$BUILD_ARGS --build-arg \"$$a\""; \
 	done; \
-	docker build --progress=plain \
+	docker build $(BUILD_OPTS) \
 	  --build-arg IMG_NAME=$(IMG_NAME) --build-arg IMG_TAG=$(IMG_TAG) $$BUILD_ARGS \
 	  -t $(REPO)/$(IMG_NAME):test . && \
 	docker run -d --rm --name=`basename $(IMG_NAME)` \
@@ -45,7 +46,7 @@ $(TAG): $(BUILDER)
 	for t in $(EXTRA_TAGS); do \
 	  TAGS="$$TAGS -t $(REPO)/$(IMG_NAME):$$t"; \
 	done; \
-	CMD="docker buildx build \
+	CMD="docker buildx build $(BUILD_OPTS) \
 	    --builder $(BUILDER) --platform "$(PLATFORM)" \
 	    --build-arg IMG_NAME=$(IMG_NAME) --build-arg IMG_TAG=$(IMG_TAG) \
 	    $$BUILD_ARGS $$PUSH $$TAGS \

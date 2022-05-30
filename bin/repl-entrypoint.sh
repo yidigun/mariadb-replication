@@ -1,6 +1,17 @@
 #!/bin/sh
 myname=`basename $0 .sh | sed -e 's!/!_!g'`
 
+# try to set locale and timezone
+if locale -a 2>/dev/null | grep -q "$LANG"; then
+  : do nothing
+else
+  locale-gen $LANG 2>/dev/null
+  update-locale LANG=$LANG 2>/dev/null
+fi
+if [ -n "$TZ" -a -f /usr/share/zoneinfo/$TZ ]; then
+  ln -sf /usr/share/zoneinfo/$TZ /etc/localtime
+fi
+
 REPL_MODE=${REPL_MODE:-none}
 if [ -z "$REPL_SERVER_ID" -a "$REPL_MODE" = master ]; then
   REPL_SERVER_ID=1
@@ -63,12 +74,12 @@ EOF
       cat $ssl_config | sed -e "s/^/[$myname] /"
     fi
 
-    # 3. call /usr/local/bin/docker-repl-entrypoint.sh
+    # 3. call /usr/local/bin/docker-entrypoint.sh
     echo "[$myname] exec() to /usr/local/bin/docker-entrypoint.sh"
     MARIADB_ALLOW_EMPTY_ROOT_PASSWORD=1 \
       exec /usr/local/bin/docker-entrypoint.sh mariadbd
 
-    # docker-repl-entrypoint.sh will execute next steps:
+    # /usr/local/bin/docker-entrypoint.sh will execute next steps:
     # 4. docker-entrypoint-initdb.d/04-root-password.sh
     # 5. docker-entrypoint-initdb.d/05-replication-user.sh
     ;;

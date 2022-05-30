@@ -12,6 +12,17 @@ It's just free. (Public Domain)
 
 See https://github.com/yidigun/mariadb-replication
 
+## Changelog
+
+* 2022-02-18 - Change default locale to en_US.UTF-8, timezone to UTC.
+  Locale and timezone is set automatically according to
+  ```$LANG``` and ```$TZ``` envoringment variables.
+
+## Supported tags
+
+* ```10.8.3-jammy```, ```10.8.3```, ```10.8```, ```10```, ```latest```
+* ```10.7-focal```, ```10.7``` (not supported)
+
 ## Environment variables
 
 - **REPL_MODE**: replication mode (required. ```none``` | ```master``` | ```slave```)
