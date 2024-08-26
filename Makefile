@@ -1,15 +1,15 @@
 REPO			= docker.io
 IMG_NAME		= yidigun/mariadb-replication
 
-TAG				= 10.8.3-jammy
-EXTRA_TAGS		= 10.8.3 10.8 10 latest
+TAG				= 11.5.2-noble
+EXTRA_TAGS		= 11.5.2 11.5 11 latest
 TEST_ARGS		=
 
 IMG_TAG			= $(TAG)
 PUSH			= yes
 BUILDER			= crossbuilder
 PLATFORM		= linux/amd64,linux/arm64
-BUILD_OPTS		= --progress=plain
+#BUILD_OPTS		= --progress=plain
 
 .PHONEY: $(BUILDER) $(TAG) all test
 
@@ -59,8 +59,8 @@ $(BUILDER):
 	  : do nothing; \
 	else \
 	  CMD="docker buildx create --name $(BUILDER) \
-	    --driver docker-container"; \
-	    --platform \"$(PLATFORM)\" \
+	    --driver docker-container \
+	    --platform \"$(PLATFORM)\"" \
 	  echo $$CMD; \
 	  eval $$CMD; \
 	fi

@@ -14,13 +14,15 @@ See https://github.com/yidigun/mariadb-replication
 
 ## Changelog
 
+* 2024-08-26 - Upgrade to version 11
 * 2022-02-18 - Change default locale to en_US.UTF-8, timezone to UTC.
   Locale and timezone is set automatically according to
   ```$LANG``` and ```$TZ``` envoringment variables.
 
 ## Supported tags
 
-* ```10.8.3-jammy```, ```10.8.3```, ```10.8```, ```10```, ```latest```
+* ```11.5.2-noble```, ```11.5.2```, ```11.5```, ```11```, ```latest```
+* ```10.11.9-jammy```, ```10.11.9```, ```10.11```, ```10```
 * ```10.7-focal```, ```10.7``` (not supported)
 
 ## Environment variables

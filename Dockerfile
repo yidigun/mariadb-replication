@@ -1,4 +1,4 @@
-ARG IMG_TAG
+ARG IMG_TAG=latest
 FROM docker.io/library/mariadb:$IMG_TAG
 
 ARG IMG_NAME
@@ -6,6 +6,9 @@ ARG IMG_TAG
 
 ENV IMG_NAME=$IMG_NAME
 ENV IMG_TAG=$IMG_TAG
+
+# 2024-08-26 archive.mariadb.org have a certification problem, so apt can't update database
+RUN sed -i -e 's/^deb /deb [trusted=yes] /' /etc/apt/sources.list.d/mariadb.list
 
 RUN apt-get -y update && \
     DEBIAN_FRONTEND=noninteractive \
