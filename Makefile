@@ -60,7 +60,7 @@ $(BUILDER):
 	else \
 	  CMD="docker buildx create --name $(BUILDER) \
 	    --driver docker-container \
-	    --platform \"$(PLATFORM)\"" \
+	    --platform \"$(PLATFORM)\""; \
 	  echo $$CMD; \
 	  eval $$CMD; \
 	fi
