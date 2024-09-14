@@ -32,16 +32,17 @@ case $CMD in
     # 0. server config
     MARIADB_PORT=${MARIADB_PORT:-3306}
     if [ $MARIADB_PORT -ne 3306 ]; then
-      sed -i -e "s/^port/$MARIADB_PORT/" /etc/mysql/conf.d/00-default.cnf
+      sed -i -e "s/^port                    = 3306/port = $MARIADB_PORT/" \
+          /etc/mysql/mariadb.conf.d/00-default.cnf
     fi
 
     # 1. define server role & server_id
     echo "[$myname] Replication Role: $REPL_MODE"
-    repl_config=/etc/mysql/conf.d/01-replication-${REPL_MODE}.cnf
+    repl_config=/etc/mysql/mariadb.conf.d/01-replication-${REPL_MODE}.cnf
     echo "[$myname] generate config: $repl_config"
     if [ "$REPL_MODE" = master ]; then
       cat <<EOF >$repl_config
-[mysqld]
+[mariadbd]
 server_id               = $REPL_SERVER_ID
 log_bin
 binlog_format           = MIXED
@@ -49,7 +50,7 @@ max_binlog_size         = 500M
 EOF
     else
       cat <<EOF >$repl_config
-[mysqld]
+[mariadbd]
 server_id               = $REPL_SERVER_ID
 EOF
     fi
@@ -59,10 +60,10 @@ EOF
     if [ -n "$SSL_CERT_FILE" -o "$SSL_CA_FILE" -o "$SSL_KEY_FILE" ]; then
       SSL_REQUIRE=${SSL_REQUIRE:-off}
       echo "[$myname] Replication Role: $REPL_MODE"
-      ssl_config=/etc/mysql/conf.d/02-ssl.cnf
+      ssl_config=/etc/mysql/mariadb.conf.d/02-ssl.cnf
       echo "[$myname] generate config: $ssl_config"
 
-      echo '[mysqld]' >$ssl_config
+      echo '[mariadbd]' >$ssl_config
       [ -n "$SSL_CERT_FILE" -a -f "$SSL_CERT_FILE" ] && echo "ssl_ca =   $SSL_CERT_FILE" >>$ssl_config
       [ -n "$SSL_CA_FILE"   -a -f "$SSL_CA_FILE" ]   && echo "ssl_cert = $SSL_CA_FILE"   >>$ssl_config
       [ -n "$SSL_KEY_FILE"  -a -f "$SSL_KEY_FILE" ]  && echo "ssl_key =  $SSL_KEY_FILE"  >>$ssl_config

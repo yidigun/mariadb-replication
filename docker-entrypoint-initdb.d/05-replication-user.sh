@@ -5,7 +5,7 @@ myname=`basename $0 .sh | sed -e 's!/!_!g'`
 
 run_query() {
   echo "$*" | sed -e "s/^/[$myname] /"
-  echo "$*" | mysql -uroot mysql
+  echo "$*" | mariadb -uroot mysql
 }
 
 if [ "$REPL_MODE" = master ]; then

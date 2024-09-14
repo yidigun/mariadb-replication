@@ -4,12 +4,12 @@ myname=`basename $0 .sh | sed -e 's!/!_!g'`
 echo
 echo "############### Server Version ###############"
 echo
-mysqladmin -uroot version | sed -e "s/^/[mysqladmin] /"
+mariadb-admin -uroot version | sed -e "s/^/[mariadb-admin] /"
 
 echo
 echo "############### Server Status ###############"
 echo
-mysqladmin -uroot status | sed -e "s/^/[mysqladmin] /"
+mariadb-admin -uroot status | sed -e "s/^/[mariadb-admin] /"
 
 if [ "$REPL_MODE" = master -o "$REPL_MODE" = slave ]; then
   echo
@@ -19,7 +19,7 @@ if [ "$REPL_MODE" = master -o "$REPL_MODE" = slave ]; then
   echo
 
   run_query() {
-    echo "$*" | mysql -uroot mysql | sed -e "s/^/[mysql] /"
+    echo "$*" | mariadb -uroot mysql | sed -e "s/^/[mysql] /"
   }
   case $REPL_MODE in
     master)

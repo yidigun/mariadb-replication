@@ -12,14 +12,14 @@ fi
 
 run_query() {
   echo "$*" | sed -e "s/^/[$myname] /"
-  echo "$*" | mysql -uroot mysql
+  echo "$*" | mariadb -uroot mysql
 }
 
 # delete root users except root@'%'
 echo "[$myname] Delete unused root users"
 del_root_users=` \
     echo "SELECT host FROM proxies_priv WHERE user = 'root' AND host NOT IN ('localhost', '%');" | \
-      mysql -uroot mysql | sed -e 1d`
+      mariadb -uroot mysql | sed -e 1d`
 for h in $del_root_users; do
   run_query "DROP USER IF EXISTS root@'$h';"
   run_query "DELETE FROM proxies_priv WHERE Host = '$h';"
