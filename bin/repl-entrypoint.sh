@@ -33,12 +33,12 @@ case $CMD in
     MARIADB_PORT=${MARIADB_PORT:-3306}
     if [ $MARIADB_PORT -ne 3306 ]; then
       sed -i -e "s/^port                    = 3306/port = $MARIADB_PORT/" \
-          /etc/mysql/mariadb.conf.d/00-default.cnf
+          /etc/mysql/conf.d/00-default.cnf
     fi
 
     # 1. define server role & server_id
     echo "[$myname] Replication Role: $REPL_MODE"
-    repl_config=/etc/mysql/mariadb.conf.d/01-replication-${REPL_MODE}.cnf
+    repl_config=/etc/mysql/conf.d/01-replication-${REPL_MODE}.cnf
     echo "[$myname] generate config: $repl_config"
     if [ "$REPL_MODE" = master ]; then
       cat <<EOF >$repl_config
@@ -60,7 +60,7 @@ EOF
     if [ -n "$SSL_CERT_FILE" -o "$SSL_CA_FILE" -o "$SSL_KEY_FILE" ]; then
       SSL_REQUIRE=${SSL_REQUIRE:-off}
       echo "[$myname] Replication Role: $REPL_MODE"
-      ssl_config=/etc/mysql/mariadb.conf.d/02-ssl.cnf
+      ssl_config=/etc/mysql/conf.d/02-ssl.cnf
       echo "[$myname] generate config: $ssl_config"
 
       echo '[mariadbd]' >$ssl_config

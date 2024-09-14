@@ -14,6 +14,7 @@ See https://github.com/yidigun/mariadb-replication
 
 ## Changelog
 
+* 2024-09-14 - Fix scripts and configs for version 11
 * 2024-08-26 - Upgrade to version 11
 * 2022-02-18 - Change default locale to en_US.UTF-8, timezone to UTC.
   Locale and timezone is set automatically according to
@@ -22,7 +23,7 @@ See https://github.com/yidigun/mariadb-replication
 ## Supported tags
 
 * ```11.5.2-noble```, ```11.5.2```, ```11.5```, ```11```, ```latest```
-* ```10.11.9-jammy```, ```10.11.9```, ```10.11```, ```10```
+* ```10.11.9-jammy```, ```10.11.9```, ```10.11```, ```10``` (not supported)
 * ```10.7-focal```, ```10.7``` (not supported)
 
 ## Environment variables
@@ -116,7 +117,7 @@ secrets:
 #### 3) Start master database
 
 ```shell
-[MASTER]$ docker-compose up -d
+[MASTER]$ docker compose up -d
 ```
 
 Start service and check master database work properly.
@@ -128,7 +129,7 @@ Following command will create backup copy in ```/snapshots/snapshot-%Y%m%d```.
 (eg: ```/snapshots/snapshot-20220210```)
 
 ```shell
-[MASTER]$ docker-compose exec mariadb-master backup-master --no-lock
+[MASTER]$ docker exec mariadb-master backup-master --no-lock
 ```
 
 And move the backup files to slave server's ```/var/lib/mysql``` volume by any means.
@@ -186,21 +187,21 @@ secrets:
 #### 3) Start slave database
 
 ```shell
-[SLAVE]$ docker-compose up -d
+[SLAVE]$ docker compose up -d
 ```
 
 #### 4) Start replication
 
 Replication position will retrieved from ```/var/lib/mysql```/```xtrabackup_binlog_info```.
-This file was generated when ```mariabackip``` make backup copy.
+This file was generated when ```mariadb-backup``` (former ```mariabackup```) make backup copy.
 
 ```shell
-[SLAVE]$ docker-compose exec mariadb-slave start-slave
+[SLAVE]$ docker exec mariadb-slave start-slave
 ```
 
 ### 4. Check status
 
 ```shell
-[MASTER]$ docker-compose exec mariadb-master show-status
-[SLAVE]$ docker-compose exec mariadb-slave show-status
+[MASTER]$ docker exec mariadb-master show-status
+[SLAVE]$ docker exec mariadb-slave show-status
 ```
